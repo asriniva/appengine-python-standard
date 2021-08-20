@@ -62,9 +62,7 @@ def wrap_wsgi_app(app, use_legacy_context_mode=True):
 
   return middlewares.Wrap(
       app,
-      if_legacy([
-          middlewares.MakeInitLegacyRequestOsEnvironMiddleware(),
-      ]) + [
+      [
           middlewares.RunInNewContextMiddleware,
           middlewares.SetContextFromHeadersMiddleware,
           middlewares.CallbackMiddleware,
@@ -73,10 +71,6 @@ def wrap_wsgi_app(app, use_legacy_context_mode=True):
           middlewares.WsgiEnvSettingMiddleware,
 
           middlewares.MakeLegacyWsgiEnvSettingMiddleware(),
-      ] + if_legacy([
-          middlewares.LegacyWsgiRemoveXAppenginePrefixMiddleware,
-          middlewares.LegacyCopyWsgiEnvToOsEnvMiddleware,
-      ]) + [
           middlewares.ErrorLoggingMiddleware,
           middlewares.BackgroundAndShutdownMiddleware,
       ])
