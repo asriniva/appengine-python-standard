@@ -20,7 +20,7 @@
 
 
 
-import os
+from google.appengine.runtime import context
 
 
 
@@ -58,8 +58,7 @@ def InvokeCallbacks():
 
 def GetRequestId():
   """Returns a unique ID using the cloud trace ID."""
-  if REQUEST_ID_KEY in os.environ:
-    return os.environ[REQUEST_ID_KEY]
+  if REQUEST_ID_KEY in context.items():
+    return context.get(REQUEST_ID_KEY)
   else:
     return None
-

@@ -50,6 +50,7 @@ from google.appengine.api import namespace_manager
 from google.appengine.api import urlfetch
 from google.appengine.api.taskqueue import taskqueue_service_bytes_pb2 as taskqueue_service_pb2
 from google.appengine.runtime import apiproxy_errors
+from google.appengine.runtime import context
 
 
 
@@ -840,7 +841,7 @@ class Task(object):
 
 
     for header_name, environ_name in _PRESERVE_ENVIRONMENT_HEADERS:
-      value = os.environ.get(environ_name)
+      value = context.get(environ_name)
       if value is not None:
         self.__headers.setdefault(header_name, value)
 

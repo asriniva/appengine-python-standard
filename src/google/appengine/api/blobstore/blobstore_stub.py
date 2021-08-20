@@ -51,6 +51,7 @@ from google.appengine.api.blobstore import blobstore_stub_service_pb2
 from google.appengine.api.blobstore import dict_blob_storage
 from google.appengine.api.blobstore import file_blob_storage
 from google.appengine.runtime import apiproxy_errors
+from google.appengine.runtime import context
 
 
 __all__ = ['BlobstoreServiceStub',
@@ -205,7 +206,7 @@ class BlobstoreServiceStub(apiproxy_stub.APIProxyStub):
       ConfigurationError if required environment variable is not found.
     """
     try:
-      return os.environ[name]
+      return context.get(name)
     except KeyError:
       raise ConfigurationError('%s is not set in environment.' % name)
 

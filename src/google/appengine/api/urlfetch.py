@@ -16,10 +16,9 @@
 #
 
 
-"""`URL` downloading `API`."""
+"""URL downloading API."""
 
 import email
-import os
 import threading
 
 import six
@@ -32,6 +31,7 @@ from google.appengine.api import apiproxy_stub_map
 from google.appengine.api import urlfetch_service_pb2
 from google.appengine.api.urlfetch_errors import *
 from google.appengine.runtime import apiproxy_errors
+from google.appengine.runtime import context
 
 
 
@@ -185,26 +185,25 @@ class _CaselessDict(IterableUserDict):
 
 
 def _is_fetching_self(url, method):
-  """Checks if the fetch is for the same `URL` from which it originated.
+  """Checks if the fetch is for the same URL from which it originated.
 
   Args:
-    url: `string`. The `URL` being fetched.
+    url: `string`. The URL being fetched.
     method: Value from `_VALID_METHODS`.
 
   Returns:
     Boolean indicating whether or not it seems that the app is trying to fetch
         itself.
   """
-  if (method != GET or
-      "HTTP_HOST" not in os.environ or
-      "PATH_INFO" not in os.environ):
+  if (method != GET or 'HTTP_HOST' not in context.items() or
+      'PATH_INFO' not in context.items()):
     return False
 
   _, host_port, path, _, _ = six.moves.urllib.parse.urlsplit(url)
 
-  if host_port == os.environ['HTTP_HOST']:
+  if host_port == context.get('HTTP_HOST'):
 
-    current_path = urllib.parse.unquote(os.environ['PATH_INFO'])
+    current_path = urllib.parse.unquote(context.get('PATH_INFO'))
     desired_path = urllib.parse.unquote(path)
 
     if (current_path == desired_path or
@@ -215,7 +214,7 @@ def _is_fetching_self(url, method):
 
 
 def create_rpc(deadline=None, callback=None):
-  """Creates an `RPC` object for use with the `URL` Fetch `API`.
+  """Creates an RPC object for use with the URL Fetch API.
 
   Args:
     deadline: Optional deadline in seconds for the operation; the default is a
@@ -233,9 +232,9 @@ def create_rpc(deadline=None, callback=None):
 def fetch(url, payload=None, method=GET, headers={},
           allow_truncated=False, follow_redirects=True,
           deadline=None, validate_certificate=None):
-  """Fetches the given `HTTP` URL, blocking until the result is returned.
+  """Fetches the given HTTP `url`, blocking until the result is returned.
 
-  `URLs` are fetched using one of the following `HTTP` methods:
+  URLs are fetched using one of the following HTTP methods:
       - `GET`
       - `POST`
       - `HEAD`
@@ -296,7 +295,7 @@ def fetch(url, payload=None, method=GET, headers={},
 def make_fetch_call(rpc, url, payload=None, method=GET, headers={},
                     allow_truncated=False, follow_redirects=True,
                     validate_certificate=None):
-  """Executes the `RPC` call to fetch a given `HTTP` URL.
+  """Executes the RPC call to fetch a given `HTTP` URL.
 
   The first argument is a `UserRPC` instance.  See `urlfetch.fetch` for a
   thorough description of the remaining arguments.
@@ -308,7 +307,7 @@ def make_fetch_call(rpc, url, payload=None, method=GET, headers={},
         requested `url`.
 
   Returns:
-    The `RPC` object that was passed into the function.
+    The `rpc` object that was passed into the function.
 
   """
 
@@ -368,7 +367,7 @@ def make_fetch_call(rpc, url, payload=None, method=GET, headers={},
 
 
 def _get_fetch_result(rpc):
-  """Checks for success, handles exceptions, and returns a converted `RPC` result.
+  """Checks for success, handles exceptions, and returns a converted RPC result.
 
   This method waits for the `rpc` if it has not yet finished and calls the
   post-call hooks on the first invocation.
@@ -377,8 +376,8 @@ def _get_fetch_result(rpc):
     rpc: A `UserRPC` object.
 
   Raises:
-    InvalidURLError: If the `URL` was invalid.
-    DownloadError: If there was a problem fetching the `URL`.
+    InvalidURLError: If the URL was invalid.
+    DownloadError: If there was a problem fetching the URL.
     PayloadTooLargeError: If the request and its payload was larger than the
         allowed limit.
     ResponseTooLargeError: If the response was either truncated (and
@@ -391,7 +390,7 @@ def _get_fetch_result(rpc):
         try again.
     ConnectionClosedError: If the target server prematurely closed the
         connection.
-    DNSLookupFailedError: If the `DNS` lookup for the `URL` failed.
+    DNSLookupFailedError: If the `DNS` lookup for the URL failed.
     DeadlineExceededError: If the deadline was exceeded; occurs when the
         client-supplied `deadline` is invalid or if the client did not specify a
         `deadline` and the system default value is invalid.

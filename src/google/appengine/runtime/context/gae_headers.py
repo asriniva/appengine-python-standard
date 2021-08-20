@@ -23,14 +23,22 @@ USER_EMAIL = contextvars.ContextVar('USER_EMAIL')
 USER_ID = contextvars.ContextVar('USER_ID')
 USER_IS_ADMIN = contextvars.ContextVar('USER_IS_ADMIN')
 USER_NICKNAME = contextvars.ContextVar('USER_NICKNAME')
+HTTP_X_APPENGINE_API_TICKET = contextvars.ContextVar(
+    'HTTP_X_APPENGINE_API_TICKET')
+HTTP_X_APPENGINE_DEV_REQUEST_ID = contextvars.ContextVar(
+    'HTTP_X_APPENGINE_DEV_REQUEST_ID')
+HTTP_X_GOOGLE_DAPPERTRACEINFO = contextvars.ContextVar(
+    'HTTP_X_GOOGLE_DAPPERTRACEINFO')
 
 
 def init_from_wsgi_environ(wsgi_env):
   """Init contextvars from matching X_APPENGINE_ headers if found."""
-
+  wsgi_env.setdefault('HTTP_X_APPENGINE_AUTH_DOMAIN', 'gmail.com')
+  wsgi_env.setdefault('HTTP_X_APPENGINE_USER_IS_ADMIN', '0')
   for ctxvar in [v for _, v in globals().items()
                  if isinstance(v, contextvars.ContextVar)]:
-    value = wsgi_env.get('HTTP_X_APPENGINE_' + ctxvar.name)
+    value = wsgi_env.get('HTTP_X_APPENGINE_' +
+                         ctxvar.name.replace('HTTP_X_APPENGINE_', ''))
     if value is not None:
       if ctxvar.name == 'USER_IS_ADMIN':
 

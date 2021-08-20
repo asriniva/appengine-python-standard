@@ -14,18 +14,14 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 #
+"""Declare oauth contextvars."""
+import contextvars
 
-
-"""The App Identity API lets an application discover its application ID.
-
-Using the ID, an App Engine application can assert its identity to other App
-Engine Apps, Google APIs, and third-party applications and services. The
-application ID can also be used to generate a URL or email address, or to make a
-run-time decision.
-
-The application ID is the same as the project ID. To learn more about the App
-Identity API, read the App Identity Python Overview:
-https://cloud.google.com/appengine/docs/python/appidentity/
-"""
-
-from google.appengine.api.app_identity.app_identity import *
+OAUTH_AUTH_DOMAIN = contextvars.ContextVar('OAUTH_AUTH_DOMAIN')
+OAUTH_EMAIL = contextvars.ContextVar('OAUTH_EMAIL')
+OAUTH_USER_ID = contextvars.ContextVar('OAUTH_USER_ID')
+OAUTH_CLIENT_ID = contextvars.ContextVar('OAUTH_CLIENT_ID')
+OAUTH_IS_ADMIN = contextvars.ContextVar('OAUTH_IS_ADMIN')
+OAUTH_ERROR_CODE = contextvars.ContextVar('OAUTH_ERROR_CODE')
+OAUTH_ERROR_DETAIL = contextvars.ContextVar('OAUTH_ERROR_DETAIL')
+OAUTH_LAST_SCOPE = contextvars.ContextVar('OAUTH_LAST_SCOPE')

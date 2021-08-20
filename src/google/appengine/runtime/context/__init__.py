@@ -19,6 +19,7 @@ import os
 
 import contextvars
 from google.appengine.runtime.context import gae_headers
+from google.appengine.runtime.context import oauth
 from google.appengine.runtime.context import wsgi
 
 READ_FROM_OS_ENVIRON = os.environ.get('READ_GAE_CONTEXT_FROM_OS_ENVIRON',
@@ -35,6 +36,46 @@ def get(key, default=None):
   if isinstance(val, bool):
     return '1' if val else '0'
   return val
+
+
+def put(key, value):
+  """Write context to os.environ if READ_GAE_CONTEXT_FROM_OS_ENVIRON else, to contextvars."""
+  if READ_FROM_OS_ENVIRON:
+    os.environ[key] = value
+    return
+  ctxvar = vars(gae_headers).get(key, vars(wsgi).get(key))
+  assert isinstance(ctxvar, contextvars.ContextVar)
+  if isinstance(value, str):
+    ctxvar.set(value == '1')
+  ctxvar.set(value)
+
+
+def clear():
+  if READ_FROM_OS_ENVIRON:
+    os.environ.clear()
+    return
+  for key in contextvars.copy_context():
+    del key
+
+
+def update(env):
+  if READ_FROM_OS_ENVIRON:
+    os.environ.update(env)
+    return
+  for key, value in env:
+    put(key, value)
+
+
+def pop(key):
+  if READ_FROM_OS_ENVIRON:
+    return os.environ.pop(key)
+  del contextvars.copy_context().items()[key]
+
+
+def items():
+  if READ_FROM_OS_ENVIRON:
+    return os.environ
+  return contextvars.copy_context().items()
 
 
 def init_from_wsgi_environ(wsgi_env):
