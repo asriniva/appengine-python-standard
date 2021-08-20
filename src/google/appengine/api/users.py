@@ -108,8 +108,10 @@ class User(object):
     if email is None and federated_identity is None:
       email = context.get('USER_EMAIL', email)
       _user_id = context.get('USER_ID', _user_id)
-      federated_identity = context.get('FEDERATED_IDENTITY', federated_identity)
-      federated_provider = context.get('FEDERATED_PROVIDER', federated_provider)
+      federated_identity = os.environ.get('FEDERATED_IDENTITY',
+                                          federated_identity)
+      federated_provider = os.environ.get('FEDERATED_PROVIDER',
+                                          federated_provider)
 
 
 
