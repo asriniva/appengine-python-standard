@@ -30,7 +30,7 @@ def get(key, default=None):
   """Read context from os.environ if READ_GAE_CONTEXT_FROM_OS_ENVIRON else, from contextvars."""
   if READ_FROM_OS_ENVIRON:
     return os.environ.get(key, default)
-  ctxvar = vars(gae_headers).get(key, vars(wsgi).get(key))
+  ctxvar = vars(oauth).get(key, vars(gae_headers).get(key, vars(wsgi).get(key)))
   assert isinstance(ctxvar, contextvars.ContextVar)
   val = ctxvar.get(default)
   if isinstance(val, bool):
@@ -43,7 +43,7 @@ def put(key, value):
   if READ_FROM_OS_ENVIRON:
     os.environ[key] = value
     return
-  ctxvar = vars(gae_headers).get(key, vars(wsgi).get(key))
+  ctxvar = vars(oauth).get(key, vars(gae_headers).get(key, vars(wsgi).get(key)))
   assert isinstance(ctxvar, contextvars.ContextVar)
   if isinstance(value, str):
     ctxvar.set(value == '1')
