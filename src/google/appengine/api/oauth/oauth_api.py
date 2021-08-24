@@ -182,7 +182,7 @@ def _maybe_call_get_oauth_user(scope):
     scope_str = scope
   else:
     scope_str = str(sorted(scope))
-  if ('OAUTH_ERROR_CODE' not in context.items().keys() or
+  if ('OAUTH_ERROR_CODE' not in context.items() or
       context.get('OAUTH_LAST_SCOPE', None) != scope_str or
       os.environ.get('TESTONLY_OAUTH_SKIP_CACHE')):
     req = user_service_pb2.GetOAuthUserRequest()
@@ -219,10 +219,10 @@ def _maybe_raise_exception():
   This method requires that 'OAUTH_ERROR_CODE' has already been set (an empty
   string indicates that there is no actual error).
   """
-  assert 'OAUTH_ERROR_CODE' in context.items().keys()
+  assert 'OAUTH_ERROR_CODE' in context.items()
   error = context.get('OAUTH_ERROR_CODE')
   if error:
-    assert 'OAUTH_ERROR_DETAIL' in context.items().keys()
+    assert 'OAUTH_ERROR_DETAIL' in context.items()
     error_detail = context.get('OAUTH_ERROR_DETAIL')
     if error == str(user_service_pb2.UserServiceError.NOT_ALLOWED):
       raise NotAllowedError(error_detail)
@@ -245,9 +245,9 @@ def _get_user_from_environ():
   Returns:
     User
   """
-  assert 'OAUTH_EMAIL' in context.items().keys()
-  assert 'OAUTH_AUTH_DOMAIN' in context.items().keys()
-  assert 'OAUTH_USER_ID' in context.items().keys()
+  assert 'OAUTH_EMAIL' in context.items()
+  assert 'OAUTH_AUTH_DOMAIN' in context.items()
+  assert 'OAUTH_USER_ID' in context.items()
   return users.User(
       email=context.get('OAUTH_EMAIL'),
       _auth_domain=context.get('OAUTH_AUTH_DOMAIN'),
@@ -262,7 +262,7 @@ def _get_client_id_from_environ():
   Returns:
     string: the value of Client ID.
   """
-  assert 'OAUTH_CLIENT_ID' in context.items().keys()
+  assert 'OAUTH_CLIENT_ID' in context.items()
   return context.get('OAUTH_CLIENT_ID')
 
 
@@ -274,6 +274,6 @@ def _get_authorized_scopes_from_environ():
   Returns:
     list: the list of OAuth scopes.
   """
-  assert 'OAUTH_AUTHORIZED_SCOPES' in context.items().keys()
+  assert 'OAUTH_AUTHORIZED_SCOPES' in context.items()
 
   return json.loads(context.get('OAUTH_AUTHORIZED_SCOPES'))

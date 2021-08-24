@@ -75,7 +75,7 @@ def pop(key):
 def items():
   if READ_FROM_OS_ENVIRON:
     return os.environ
-  return dict(contextvars.copy_context().items())
+  return contextvars.copy_context()
 
 
 def init_from_wsgi_environ(wsgi_env):
