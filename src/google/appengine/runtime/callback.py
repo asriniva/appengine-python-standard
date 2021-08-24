@@ -58,7 +58,7 @@ def InvokeCallbacks():
 
 def GetRequestId():
   """Returns a unique ID using the cloud trace ID."""
-  if REQUEST_ID_KEY in context.items():
+  if REQUEST_ID_KEY in context.items().keys():
     return context.get(REQUEST_ID_KEY)
   else:
     return None

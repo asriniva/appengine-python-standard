@@ -195,8 +195,8 @@ def _is_fetching_self(url, method):
     Boolean indicating whether or not it seems that the app is trying to fetch
         itself.
   """
-  if (method != GET or 'HTTP_HOST' not in context.items() or
-      'PATH_INFO' not in context.items()):
+  if (method != GET or 'HTTP_HOST' not in context.items().keys() or
+      'PATH_INFO' not in context.items().keys()):
     return False
 
   _, host_port, path, _, _ = six.moves.urllib.parse.urlsplit(url)
